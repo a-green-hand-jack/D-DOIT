@@ -159,23 +159,23 @@ h2 { margin-bottom: 18px; font-family: Georgia, "Times New Roman", serif; font-s
 .equation { color: var(--ink); font-family: Georgia, "Times New Roman", serif; font-size: 1.45rem; font-style: italic; white-space: nowrap; }
 .equation-note { color: var(--muted); font-size: 0.82rem; }
 
-.results-band { padding: 90px 0 100px; color: var(--paper); background: var(--dark); }
-.section-intro-light .section-label { color: #f6cec1; }
-.section-intro-light h2 { color: var(--paper); }
-.section-intro-light > p:last-child { color: #f9f4dc; }
-.metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: 49px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.2); }
-.metric { min-height: 184px; padding: 25px 26px 22px; background: var(--dark-soft); }
-.metric-value { color: var(--paper); font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.7rem, 5vw, 4.1rem); line-height: 1; letter-spacing: -0.07em; }
+.results-band { padding: 90px 0 100px; color: var(--ink); background: var(--canvas); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.section-intro-light .section-label { color: var(--coral); }
+.section-intro-light h2 { color: var(--ink); }
+.section-intro-light > p:last-child { color: var(--muted); }
+.metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin-top: 49px; background: var(--line); border: 1px solid var(--line); }
+.metric { min-height: 184px; padding: 25px 26px 22px; background: var(--paper); }
+.metric-value { color: var(--blue); font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.7rem, 5vw, 4.1rem); line-height: 1; letter-spacing: -0.07em; }
 .metric-value small { font-size: 0.4em; letter-spacing: -0.01em; }
-.metric-name { margin-top: 16px; color: #f7e8aa; font-family: Georgia, "Times New Roman", serif; font-size: 1.2rem; }
-.metric-context { margin-top: 5px; color: #f9f4dc; font-size: 0.79rem; }
-.results-table-wrap { margin-top: 48px; overflow-x: auto; border-top: 1px solid rgba(255,255,255,0.22); }
+.metric-name { margin-top: 16px; color: var(--coral); font-family: Georgia, "Times New Roman", serif; font-size: 1.2rem; }
+.metric-context { margin-top: 5px; color: var(--muted); font-size: 0.79rem; }
+.results-table-wrap { margin-top: 48px; overflow-x: auto; border-top: 1px solid var(--line); }
 table { width: 100%; border-collapse: collapse; min-width: 680px; }
-caption { padding: 17px 0 12px; color: #f6cec1; text-align: left; font-size: 0.78rem; font-weight: 750; letter-spacing: 0.1em; text-transform: uppercase; }
-th, td { padding: 15px 14px 15px 0; border-bottom: 1px solid rgba(255,255,255,0.16); text-align: left; vertical-align: top; }
-th { color: #f6cec1; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase; }
-td { color: #f9f4dc; font-size: 0.88rem; }
-td:first-child { width: 20%; color: var(--paper); font-weight: 700; }
+caption { padding: 17px 0 12px; color: var(--coral); text-align: left; font-size: 0.78rem; font-weight: 750; letter-spacing: 0.1em; text-transform: uppercase; }
+th, td { padding: 15px 14px 15px 0; border-bottom: 1px solid rgba(181, 170, 144, 0.58); text-align: left; vertical-align: top; }
+th { color: var(--coral); font-size: 0.75rem; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase; }
+td { color: var(--ink-soft); font-size: 0.88rem; }
+td:first-child { width: 20%; color: var(--ink); font-weight: 700; }
 
 .evidence-section { padding: 92px 0 100px; }
 .evidence-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 84px; align-items: start; }
@@ -283,6 +283,6 @@ td:first-child { width: 20%; color: var(--paper); font-weight: 700; }
 }
 
 .results-band .results-detail-heading h3,
-.results-band .secondary-results .results-detail-heading h3 { color: var(--paper); }
-.results-band .results-detail-heading p { color: #f9f4dc; }
-.results-band .table-footnote { color: #f9f4dc; }
+.results-band .secondary-results .results-detail-heading h3 { color: var(--ink); }
+.results-band .results-detail-heading p { color: var(--muted); }
+.results-band .table-footnote { color: var(--muted); }
