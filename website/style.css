@@ -93,13 +93,13 @@ h1 {
   margin: 27px auto 0;
   color: var(--ink);
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(3.2rem, 7.6vw, 6.55rem);
+  font-size: clamp(3rem, 6.4vw, 5.7rem);
   font-weight: 700;
   line-height: 0.98;
   letter-spacing: -0.075em;
 }
 
-h1 span { color: var(--ink-soft); font-size: 0.61em; letter-spacing: -0.055em; }
+h1 span { color: var(--ink-soft); font-size: 0.72em; letter-spacing: -0.055em; }
 .hero-subtitle { margin: 12px 0 0; color: var(--blue); font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.45rem, 3vw, 2.1rem); line-height: 1.15; }
 .hero-rule { width: 72px; height: 3px; margin: 29px auto 24px; background: var(--coral); border-radius: 999px; }
 .authors { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 17px; margin-top: 18px; font-size: 0.94rem; font-weight: 700; }
@@ -266,8 +266,8 @@ td:first-child { width: 20%; color: var(--ink); font-weight: 700; }
   .nav-shell, .section-shell, .footer-shell { width: min(100% - 30px, 1080px); }
   .brand { font-size: 1rem; }
   .hero { padding-bottom: 63px; }
-  h1 { font-size: 3.55rem; }
-  h1 span { font-size: 0.58em; }
+  h1 { font-size: 3.2rem; }
+  h1 span { font-size: 0.72em; }
   .authors { gap: 2px 9px; font-size: 0.86rem; }
   .authors span::after { margin-left: 9px; }
   .takeaway-section, .content-section, .results-band, .evidence-section, .citation-section { padding: 69px 0 76px; }
