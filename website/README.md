@@ -12,10 +12,15 @@ directly for a quick preview, or serve the directory locally:
 python3 -m http.server 8000 --directory website
 ```
 
-The repository workflow at `.github/workflows/deploy-pages.yml` publishes this
-directory to GitHub Pages on pushes to `main` that touch the site. The first
-deployment still requires GitHub Pages to be enabled for the repository; after
-that, the workflow owns the deployment and does not require a build toolchain.
+Live page: <https://a-green-hand-jack.github.io/D-DOIT/>
+
+The workflow at `.github/workflows/deploy-pages.yml` publishes this directory
+from the public `a-green-hand-jack/D-DOIT` repository on pushes to `main` that
+touch the site. Pages is enabled with GitHub Actions as its source.
+
+The private paper repository retains the website source; its Pages job is
+skipped. To publish future edits made here, copy `website/` and the Pages
+workflow to the public repository and commit and push there as well.
 
 The arXiv button is intentionally disabled until a preprint URL exists. The
 OpenReview and code buttons already point to the supplied public resources.
