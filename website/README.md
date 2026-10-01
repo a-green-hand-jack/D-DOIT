@@ -5,7 +5,9 @@ This directory is a self-contained static project page for
 `h`-Transform**.
 
 It follows the clean academic-project-page pattern used by the SENTINEL page,
-with no build step or third-party JavaScript dependency. Open `index.html`
+with no build step or third-party JavaScript dependency. The current visual direction
+also borrows the image-first narrative rhythm used by the NeurIPS 2026 MetaCanvas
+and CO₂Jump project pages; only the layout conventions are reused. Open `index.html`
 directly for a quick preview, or serve the directory locally:
 
 ```bash

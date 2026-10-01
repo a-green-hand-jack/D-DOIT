@@ -3,16 +3,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f6f8fb" />
+    <meta name="theme-color" content="#f8fafc" />
     <meta
       name="description"
       content="D-DOIT is a training-free sampler that adapts frozen masked discrete diffusion models to black-box sequence rewards with a discrete Doob h-transform."
     />
     <meta property="og:title" content="D-DOIT: Training-free Adaptation of Discrete Diffusion" />
-    <meta
-      property="og:description"
-      content="Inference-time reward guidance for masked discrete diffusion models."
-    />
+    <meta property="og:description" content="Inference-time reward guidance for masked discrete diffusion models." />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="assets/ddoit-overview.png" />
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
@@ -37,14 +34,11 @@
     </header>
 
     <main id="top">
-      <section class="hero section-shell">
-        <div class="eyebrow"><span class="eyebrow-dot"></span> NeurIPS 2026 · Accepted</div>
-        <h1>D-DOIT</h1>
-        <p class="hero-title">Training-free Adaptation of Discrete Diffusion via Doob’s <em>h</em>-Transform</p>
-        <p class="hero-lede">
-          A frozen masked diffusion model can be guided toward high-reward sequences at inference time.
-          D-DOIT turns that idea into a practical sampler for generic black-box rewards.
-        </p>
+      <section class="hero section-shell" aria-labelledby="page-title">
+        <div class="conference-label"><span>NeurIPS 2026</span><span aria-hidden="true">·</span><span>Accepted</span></div>
+        <h1 id="page-title">D-DOIT:<br /><span>Training-free Adaptation of Discrete Diffusion</span></h1>
+        <p class="hero-subtitle">via Doob’s <em>h</em>-Transform</p>
+        <div class="hero-rule" aria-hidden="true"></div>
 
         <div class="authors" aria-label="Authors">
           <span>Jieke Wu</span><span>Qijie Zhu</span><span>Weimin Wu</span>
@@ -54,7 +48,7 @@
 
         <div class="hero-actions" aria-label="Project links">
           <a class="button button-primary" href="https://openreview.net/forum?id=amRYWewE5M" target="_blank" rel="noreferrer">
-            <span class="button-icon" aria-hidden="true">↗</span> OpenReview
+            <span class="button-icon" aria-hidden="true">↗</span> Paper
           </a>
           <a class="button button-secondary" href="https://github.com/WeiminWu2000/D-DOIT" target="_blank" rel="noreferrer">
             <span class="button-icon" aria-hidden="true">⌘</span> Code
@@ -63,113 +57,139 @@
             <span class="button-icon" aria-hidden="true">↗</span> arXiv · coming soon
           </span>
         </div>
+        <p class="availability-note">The preprint link will be added when the arXiv release is available.</p>
       </section>
 
       <section class="section-shell teaser-section" aria-labelledby="overview-title">
-        <div class="teaser-frame">
+        <figure class="teaser-figure">
           <img src="assets/ddoit-overview.png" alt="Overview of standard masked discrete sampling and the D-DOIT discrete Doob transform with candidate evaluation and optional best-of-K refinement." />
-        </div>
-        <p id="overview-title" class="figure-caption">
-          D-DOIT changes the local reverse transition law: propose candidate reveals, estimate their downstream value with one prediction-head pass, and sample according to the resulting Doob weights.
-        </p>
+          <figcaption id="overview-title">D-DOIT modifies the local reverse transition law: it proposes candidate reveals, estimates their downstream value, and samples according to the resulting Doob weights.</figcaption>
+        </figure>
       </section>
 
-      <section class="section-shell intro-grid" aria-labelledby="abstract-title">
-        <div>
-          <p class="section-kicker">The idea</p>
-          <h2 id="abstract-title">Adapt the sampling law, keep the backbone fixed.</h2>
-        </div>
-        <div class="abstract-copy">
-          <p>
-            Reward-guided adaptation is useful for sequence design, but existing approaches either update model parameters, require differentiable rewards, or pay for large particle populations and search procedures. D-DOIT instead treats adaptation as sampling from a reward-tilted distribution induced by the frozen model.
-          </p>
-          <p>
-            The discrete Doob <em>h</em>-transform gives the exact reference reweighting of categorical token-reveal transitions. D-DOIT makes it executable with a prediction-head <em>h</em>-estimator, finite-candidate selection, and optional late-stage best-of-<em>K</em> refinement—using reward values only.
-          </p>
+      <section class="section-shell takeaway-section" aria-labelledby="takeaway-title">
+        <div class="section-label">The idea</div>
+        <h2 id="takeaway-title">Adapt the sampling law.<br />Keep the backbone fixed.</h2>
+        <div class="takeaway-grid">
+          <article>
+            <span class="takeaway-index">01</span>
+            <h3>Training-free</h3>
+            <p>No parameter updates or reward backpropagation are needed during adaptation.</p>
+          </article>
+          <article>
+            <span class="takeaway-index">02</span>
+            <h3>Black-box rewards</h3>
+            <p>Use reward values directly, even when the evaluator is non-differentiable.</p>
+          </article>
+          <article>
+            <span class="takeaway-index">03</span>
+            <h3>Kernel-level guidance</h3>
+            <p>Reweight the categorical reveal transitions where masked diffusion makes its decisions.</p>
+          </article>
         </div>
       </section>
 
-      <section id="method" class="section-shell method-section" aria-labelledby="method-title">
-        <div class="section-heading">
-          <p class="section-kicker">Method</p>
+      <section id="method" class="section-shell content-section" aria-labelledby="method-title">
+        <div class="section-intro">
+          <div class="section-label">Method</div>
           <h2 id="method-title">A discrete Doob transform in three moves.</h2>
-          <p>Guidance happens at the kernel level, where masked diffusion actually makes its reveal decisions.</p>
+          <p>Starting from a frozen masked diffusion model, D-DOIT turns a reward function into an inference-time change of measure.</p>
         </div>
 
-        <div class="method-grid">
-          <article class="method-card">
-            <div class="card-number">01</div>
-            <h3>Propose</h3>
-            <p>Draw a small set of candidate next states from the frozen reverse transition.</p>
-            <div class="token-row" aria-hidden="true"><span class="token token-a">A</span><span class="token token-mask">M</span><span class="token token-c">C</span><span class="token token-mask">M</span></div>
+        <div class="method-steps">
+          <article class="method-step">
+            <span class="step-index">01</span>
+            <div>
+              <h3>Propose</h3>
+              <p>Draw a small set of candidate next states from the frozen reverse transition.</p>
+            </div>
           </article>
-          <article class="method-card method-card-accent">
-            <div class="card-number">02</div>
-            <h3>Value</h3>
-            <p>Complete each candidate with one prediction-head pass and query the black-box reward.</p>
-            <div class="equation"><span>π<sub>β</sub>(x)</span><span>∝</span><span>p<sub>θ</sub>(x)e<sup>R(x)/β</sup></span></div>
+          <article class="method-step">
+            <span class="step-index">02</span>
+            <div>
+              <h3>Estimate value</h3>
+              <p>Complete each candidate with one prediction-head pass and query the black-box reward.</p>
+            </div>
           </article>
-          <article class="method-card">
-            <div class="card-number">03</div>
-            <h3>Reweight</h3>
-            <p>Sample the next state according to the estimated Doob weights; optionally branch late and keep the best sequence.</p>
-            <div class="weight-bars" aria-hidden="true"><span style="height: 35%"></span><span style="height: 78%"></span><span style="height: 52%"></span><span style="height: 92%"></span></div>
+          <article class="method-step">
+            <span class="step-index">03</span>
+            <div>
+              <h3>Reweight</h3>
+              <p>Sample the next state according to the estimated Doob weights, with optional late-stage best-of-<em>K</em> refinement.</p>
+            </div>
           </article>
+        </div>
+
+        <div class="equation-strip" aria-label="Reward-tilted distribution equation">
+          <span class="equation-label">Reward-tilted target</span>
+          <span class="equation">π<sub>β</sub>(x) ∝ p<sub>θ</sub>(x)e<sup>R(x)/β</sup></span>
+          <span class="equation-note">the reference law that the practical sampler approximates</span>
         </div>
       </section>
 
-      <section id="results" class="section-shell results-section" aria-labelledby="results-title">
-        <div class="section-heading">
-          <p class="section-kicker">Results</p>
-          <h2 id="results-title">One sampler, three sequence-design settings.</h2>
-          <p>Reported values follow the paper’s approved evaluation protocols and preserve their metric-specific trade-offs.</p>
-        </div>
-        <div class="result-grid">
-          <article class="result-card result-card-blue">
-            <div class="result-value">6.19 <small>± 0.05</small></div>
-            <h3>Pred-Activity</h3>
-            <p>DRAKES HepG2 enhancer design with the high-budget D-DOIT-Q operating point.</p>
-            <span class="result-tag">DNA · HepG2</span>
-          </article>
-          <article class="result-card result-card-red">
-            <div class="result-value">0.119</div>
-            <h3>Specificity reward ΔR</h3>
-            <p>Cell-type-specific enhancer design with the same frozen masked-diffusion backbone.</p>
-            <span class="result-tag">DNA · Ctrl-DNA</span>
-          </article>
-          <article class="result-card result-card-gold">
-            <div class="result-value">68.1<small>%</small></div>
-            <h3>Joint success</h3>
-            <p>Protein inverse folding, combining stability and structure criteria.</p>
-            <span class="result-tag">Protein</span>
-          </article>
+      <section id="results" class="results-band" aria-labelledby="results-title">
+        <div class="section-shell">
+          <div class="section-intro section-intro-light">
+            <div class="section-label">Results</div>
+            <h2 id="results-title">One sampler, three sequence-design settings.</h2>
+            <p>Headline values below follow the paper’s approved evaluation protocols and preserve their metric-specific trade-offs.</p>
+          </div>
+
+          <div class="metrics-grid">
+            <article class="metric">
+              <div class="metric-value">6.19 <small>± 0.05</small></div>
+              <div class="metric-name">Pred-Activity</div>
+              <div class="metric-context">DRAKES HepG2 enhancer design · D-DOIT-Q</div>
+            </article>
+            <article class="metric">
+              <div class="metric-value">0.119</div>
+              <div class="metric-name">Specificity reward ΔR</div>
+              <div class="metric-context">Ctrl-DNA cell-type-specific enhancer design</div>
+            </article>
+            <article class="metric">
+              <div class="metric-value">68.1<small>%</small></div>
+              <div class="metric-name">Joint success</div>
+              <div class="metric-context">Protein inverse folding · stability + structure</div>
+            </article>
+          </div>
+
+          <div class="results-table-wrap">
+            <table>
+              <caption>Evaluation settings represented on this page</caption>
+              <thead>
+                <tr><th>Setting</th><th>What is measured</th><th>What D-DOIT changes</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>DNA · HepG2</td><td>Task-level predicted activity</td><td>Reward-guided reveal choices with the frozen backbone</td></tr>
+                <tr><td>DNA · Ctrl-DNA</td><td>Cell-type specificity and naturalness</td><td>Inference-time adaptation using reward evaluations only</td></tr>
+                <tr><td>Protein</td><td>Stability and structural quality</td><td>Black-box sequence design without a fine-tuning loop</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 
-      <section class="section-shell benchmark-section" aria-labelledby="benchmark-title">
-        <div class="section-heading compact-heading">
-          <p class="section-kicker">What D-DOIT preserves</p>
-          <h2 id="benchmark-title">Reward guidance with the backbone still intact.</h2>
+      <section class="section-shell evidence-section" aria-labelledby="evidence-title">
+        <div class="section-intro">
+          <div class="section-label">Takeaways</div>
+          <h2 id="evidence-title">The model stays intact while the sampler adapts.</h2>
         </div>
-        <div class="benchmark-list">
-          <div class="benchmark-row">
-            <div class="benchmark-icon">DNA</div>
-            <div><h3>Task-level reward</h3><p>Improve activity or specificity using only reward evaluations.</p></div>
+        <div class="evidence-grid">
+          <div class="evidence-copy">
+            <p>D-DOIT is designed for settings where reward evaluation is available but training a task-specific model is undesirable. Its practical sampler uses a prediction-head <em>h</em>-estimator and finite-candidate selection.</p>
+            <p>The paper reports reward gains together with naturalness, structural, and compute diagnostics. These measurements describe task-specific trade-offs rather than a claim of universal dominance.</p>
           </div>
-          <div class="benchmark-row">
-            <div class="benchmark-icon">↗</div>
-            <div><h3>Naturalness and structure</h3><p>Track accessibility, 3-mer statistics, motif structure, or protein quality alongside reward.</p></div>
-          </div>
-          <div class="benchmark-row">
-            <div class="benchmark-icon">ƒ</div>
-            <div><h3>No fine-tuning loop</h3><p>The diffusion backbone remains frozen throughout inference-time adaptation.</p></div>
+          <div class="evidence-list">
+            <div><span class="evidence-mark">↗</span><span><strong>Task reward</strong><br />Improve activity or specificity with reward queries.</span></div>
+            <div><span class="evidence-mark">⌁</span><span><strong>Sequence quality</strong><br />Track accessibility, motif structure, 3-mer statistics, or protein quality.</span></div>
+            <div><span class="evidence-mark">○</span><span><strong>Frozen backbone</strong><br />Keep the discrete diffusion model unchanged during adaptation.</span></div>
           </div>
         </div>
       </section>
 
       <section id="citation" class="section-shell citation-section" aria-labelledby="citation-title">
-        <div class="citation-heading">
-          <p class="section-kicker">Citation</p>
+        <div class="section-intro">
+          <div class="section-label">Citation</div>
           <h2 id="citation-title">If D-DOIT helps your work, please cite it.</h2>
         </div>
         <div class="citation-box">
@@ -188,7 +208,7 @@
     <footer class="site-footer">
       <div class="footer-shell">
         <p>D-DOIT · NeurIPS 2026</p>
-        <p>Project page design inspired by the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank" rel="noreferrer">Academic Project Page Template</a> and <a href="https://nerfies.github.io/" target="_blank" rel="noreferrer">Nerfies</a>.</p>
+        <p>Project page structure inspired by <a href="https://nu-ideas-lab.github.io/SENTINEL/" target="_blank" rel="noreferrer">SENTINEL</a>, the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank" rel="noreferrer">Academic Project Page Template</a>, and <a href="https://nerfies.github.io/" target="_blank" rel="noreferrer">Nerfies</a>.</p>
       </div>
     </footer>
 
