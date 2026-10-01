@@ -26,6 +26,7 @@
         </a>
         <nav class="nav-links" aria-label="Primary navigation">
           <a href="#method">Method</a>
+          <a href="#algorithm">Algorithm</a>
           <a href="#results">Results</a>
           <a href="#citation">Citation</a>
           <a class="nav-code" href="https://github.com/WeiminWu2000/D-DOIT" target="_blank" rel="noreferrer">Code <span aria-hidden="true">↗</span></a>
@@ -58,6 +59,7 @@
           </span>
         </div>
         <p class="availability-note">The preprint link will be added when the arXiv release is available.</p>
+        <p class="hero-abstract">D-DOIT adapts a frozen masked discrete diffusion model to generic black-box sequence rewards by reweighting categorical token-reveal transitions with a discrete Doob <em>h</em>-transform.</p>
       </section>
 
       <section class="section-shell teaser-section" aria-labelledby="overview-title">
@@ -125,6 +127,43 @@
           <span class="equation">π<sub>β</sub>(x) ∝ p<sub>θ</sub>(x)e<sup>R(x)/β</sup></span>
           <span class="equation-note">the reference law that the practical sampler approximates</span>
         </div>
+
+        <div id="algorithm" class="algorithm-stack">
+          <div class="algorithm-intro">
+            <div class="section-label">Executable sampler</div>
+            <h3>From the exact transform to a finite-candidate update.</h3>
+            <p>The reported implementation uses a prediction-head completion for each candidate, then samples the next state with the estimated Doob weights. The optional split is only used to hedge irreversible reveals late in the chain.</p>
+          </div>
+
+          <article class="algorithm-panel">
+            <div class="algorithm-heading"><span>Algorithm 1</span><strong>D-DOIT with optional best-of-<em>K</em> refinement</strong></div>
+            <pre><code><span class="algo-keyword">Input:</span> frozen P<sub>θ</sub>, reward R, batch B, steps L,
+       guidance window [l<sub>end</sub>, l<sup>*</sup>], split index s<sub>split</sub>, width K,
+       guided-step parameters (M, ω, β, τ, γ)
+
+Initialize B all-mask trajectories at time t<sub>L</sub>
+<span class="algo-keyword">for</span> s = 0, 1, …, L − 1:
+    <span class="algo-keyword">if</span> s = s<sub>split</sub> and K &gt; 1:
+        duplicate each active trajectory into K copies
+    l ← L − s
+    <span class="algo-keyword">if</span> l<sub>end</sub> ≤ l ≤ l<sup>*</sup>:
+        x̄<sub>t<sub>l−1</sub></sub> ← <span class="algo-call">DoobGuidedStep</span>(x̄<sub>t<sub>l</sub></sub>; M, ω, β, τ, γ)
+    <span class="algo-keyword">else</span>:
+        x̄<sub>t<sub>l−1</sub></sub> ∼ P<sub>θ</sub>(· | x̄<sub>t<sub>l</sub></sub>)
+<span class="algo-keyword">return</span> the highest-reward clean copy in each group (or all clean sequences when K = 1)</code></pre>
+            <p class="algorithm-caption">The split and terminal ranking are optional. Setting K = 1 disables best-of-K refinement and recovers the core D-DOIT branch.</p>
+          </article>
+
+          <article class="algorithm-panel algorithm-panel-secondary">
+            <div class="algorithm-heading"><span>Algorithm 2</span><strong><em>DoobGuidedStep</em></strong></div>
+            <pre><code>1. Compute the prediction head μ<sub>θ</sub><sup>j</sup>(· | x̄<sub>t<sub>l</sub></sub>, t<sub>l</sub>) once for all positions.
+2. Form μ<sub>θ,τ</sub><sup>j</sup>(v) ∝ μ<sub>θ</sub><sup>j</sup>(v)<sup>1/τ</sup> and draw M candidate states ȳ<sup>(m)</sup>.
+3. For each candidate m, draw a clean completion x̂<sub>0</sub><sup>(m)</sup> from the tempered prediction head.
+4. Set ĥ<sup>(m)</sup> ← exp(R(x̂<sub>0</sub><sup>(m)</sup>) / β).
+5. Sample m<sup>*</sup> ∝ (ĥ<sup>(m)</sup>)<sup>ω</sup> and return x̄<sub>t<sub>l−1</sub></sub> = ȳ<sup>(m<sup>*</sup>)</sup>.</code></pre>
+            <p class="algorithm-caption">One guided step costs one shared proposal pass, M prediction-head completions, and M reward evaluations. The reported operating points omit the proposal-ratio correction; this is the practical estimator rather than an exact-target guarantee.</p>
+          </article>
+        </div>
       </section>
 
       <section id="results" class="results-band" aria-labelledby="results-title">
@@ -166,6 +205,69 @@
               </tbody>
             </table>
           </div>
+
+          <div class="results-detail">
+            <div class="results-detail-heading">
+              <div class="section-label">Primary result</div>
+              <h3>HepG2 enhancer design on DRAKES</h3>
+              <p>Means with seed-level standard deviations. All four metrics are higher-is-better; bold and underline mark the best and second-best means in the paper table.</p>
+            </div>
+            <div class="wide-table-wrap">
+              <table class="primary-table">
+                <caption>Table 1 · Main DRAKES comparison</caption>
+                <thead>
+                  <tr><th>Method</th><th>Pred-Activity<br /><small>median ↑</small></th><th>ATAC-Acc<br /><small>↑ (%)</small></th><th>3-mer Corr<br /><small>↑</small></th><th>JASPAR Corr<br /><small>↑</small></th></tr>
+                </thead>
+                <tbody>
+                  <tr class="group-row"><th colspan="5">Training-free methods</th></tr>
+                  <tr><td>Pre-trained</td><td>0.17 (0.04)</td><td>1.5 (0.2)</td><td>−0.061 (0.034)</td><td>0.249 (0.015)</td></tr>
+                  <tr><td>CG</td><td>3.30 (0.00)</td><td>0.0 (0.0)</td><td>−0.065 (0.001)</td><td>0.212 (0.035)</td></tr>
+                  <tr><td>SMC</td><td>4.15 (0.33)</td><td>39.9 (8.7)</td><td>0.840 (0.045)</td><td>0.756 (0.068)</td></tr>
+                  <tr><td>TDS</td><td>4.58 (0.49)</td><td>40.0 (14.1)</td><td>0.817 (0.097)</td><td>0.798 (0.044)</td></tr>
+                  <tr><td>SVDD-PM<sup>†</sup></td><td>6.04 (0.07)</td><td>39.8 (0.4)</td><td>0.688 (0.012)</td><td>0.917 (0.002)</td></tr>
+                  <tr class="ours-row"><td><strong>D-DOIT-LBOK-S (Ours)</strong></td><td>4.56 (0.04)</td><td>65.0 (1.4)</td><td>0.851 (0.017)</td><td><strong>0.948 (0.002)</strong></td></tr>
+                  <tr class="ours-row"><td><strong>D-DOIT-Q (Ours)</strong></td><td><u>6.19 (0.05)</u></td><td>91.7 (0.9)</td><td><strong>0.894 (0.009)</strong></td><td><u>0.923 (0.002)</u></td></tr>
+                  <tr class="group-row"><th colspan="5">Training-based methods</th></tr>
+                  <tr><td>CFG</td><td>5.04 (0.06)</td><td><u>92.1 (0.9)</u></td><td>0.746 (0.001)</td><td>0.864 (0.011)</td></tr>
+                  <tr><td>DRAKES w/o KL</td><td><strong>6.44 (0.04)</strong></td><td>82.5 (2.8)</td><td>0.307 (0.001)</td><td>0.557 (0.015)</td></tr>
+                  <tr><td><strong>DRAKES</strong></td><td>5.61 (0.07)</td><td><strong>92.5 (0.6)</strong></td><td><u>0.887 (0.002)</u></td><td>0.911 (0.002)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="table-footnote">† SVDD-PM is the separately measured matched-time control (M = 416), not part of the original DRAKES sweep. This table reports benchmark quality metrics; it is not an experimental validation claim.</p>
+          </div>
+
+          <div class="secondary-results">
+            <div class="results-detail-heading">
+              <div class="section-label">Cross-task evidence</div>
+              <h3>Specificity and protein transfer</h3>
+              <p>The same sampler transfers to a cell-type-specific enhancer task and a protein inverse-folding benchmark, with the trade-offs reported in the paper.</p>
+            </div>
+            <div class="wide-table-wrap">
+              <table>
+                <caption>Supporting results</caption>
+                <thead><tr><th>Task</th><th>Operating point</th><th>Reward / success</th><th>Quality metric</th><th>Reading</th></tr></thead>
+                <tbody>
+                  <tr><td>Ctrl-DNA</td><td>D-DOIT-LBOK-S</td><td>ΔR = 0.033 (0.025)</td><td>Motif Corr. = 0.648 (0.046)</td><td>Lower-budget operating point</td></tr>
+                  <tr class="ours-row"><td>Ctrl-DNA</td><td>D-DOIT-Q</td><td><strong>ΔR = 0.119 (0.063)</strong></td><td>Motif Corr. = 0.498 (0.070)</td><td>High-specificity point with a motif trade-off</td></tr>
+                  <tr class="ours-row"><td>Protein</td><td>D-DOIT</td><td><strong>Joint success = 68.1 ± 3.5%</strong></td><td>Pred-ddG = 0.870 ± 0.046; scRMSD = 0.872</td><td>Structural fidelity remains a separate metric</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-shell protocol-section" aria-labelledby="protocol-title">
+        <div class="section-intro">
+          <div class="section-label">Evaluation map</div>
+          <h2 id="protocol-title">Three tasks, one frozen sequence prior.</h2>
+          <p>The page now exposes the evaluation surface behind the headline numbers, while keeping the paper’s comparison boundaries visible.</p>
+        </div>
+        <div class="protocol-grid">
+          <article><span class="protocol-number">01</span><h3>DRAKES · HepG2</h3><p>Generate 200 bp enhancer sequences and report Pred-Activity, ATAC-Acc, 3-mer correlation, and JASPAR correlation.</p><span class="protocol-meta">D-DOIT-Q: M = 52, K = 8</span></article>
+          <article><span class="protocol-number">02</span><h3>Ctrl-DNA</h3><p>Target one cell line while suppressing off-target activity across HepG2, K562, and SK-N-SH; report ΔR, motif correlation, and diversity.</p><span class="protocol-meta">LBOK-S + Q operating points</span></article>
+          <article><span class="protocol-number">03</span><h3>Protein inverse folding</h3><p>Design amino-acid sequences for fixed backbones and evaluate predicted stability, structural fidelity, and joint success.</p><span class="protocol-meta">12 backbones · 3 seeds · 128 sequences</span></article>
         </div>
       </section>
 
