@@ -141,7 +141,7 @@ h1 span { color: var(--ink-soft); font-size: 0.61em; letter-spacing: -0.055em; }
 .takeaway-section { padding: 90px 0 100px; }
 .section-label { margin-bottom: 12px; }
 h2 { margin-bottom: 18px; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.35rem, 5vw, 4rem); font-weight: 700; line-height: 1.04; letter-spacing: -0.06em; }
-.takeaway-section h2 { max-width: 700px; }
+.takeaway-section h2 { max-width: none; }
 .takeaway-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 48px; }
 .takeaway-grid article { padding-top: 18px; border-top: 2px solid var(--ink); }
 .takeaway-index, .step-index { color: var(--coral); font: 700 0.73rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.12em; }
@@ -149,8 +149,8 @@ h2 { margin-bottom: 18px; font-family: Georgia, "Times New Roman", serif; font-s
 .takeaway-grid p, .method-step p { margin-bottom: 0; color: var(--muted); font-size: 0.94rem; }
 
 .content-section { padding: 92px 0 100px; }
-.section-intro { max-width: 750px; margin-bottom: 42px; }
-.section-intro > p:last-child { color: var(--muted); font-size: 1.02rem; }
+.section-intro { max-width: none; margin-bottom: 42px; }
+.section-intro > p:last-child { max-width: 750px; color: var(--muted); font-size: 1.02rem; }
 .method-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
 .method-step { display: grid; grid-template-columns: 33px 1fr; gap: 13px; padding: 23px 0 4px; border-top: 1px solid var(--line); }
 .method-step h3 { margin-top: 0; }
